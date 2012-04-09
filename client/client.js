@@ -4,7 +4,8 @@ var socket;
 $(function() {
     socket = io.connect("http://127.0.0.1:8080/");
     socket.on('connect', function() {
-        drawFields();
+        drawField('my');
+        drawField('enemy');
         socket.on('message', function(msg) {
             console.log(msg);
         });
@@ -34,47 +35,31 @@ $(function() {
     });
 });
 
-function drawFields() {
-    field = document.createElement('table');
-    field.setAttribute('id', 'my-field');
-    field.setAttribute('cellpadding', '0');
-    for(i = 1; i <= letters.length; i++) {
-        var row = document.createElement('tr');
-        row.setAttribute('id', 'row-' + i);
+function drawField(type) {
+    // Check if such field is already drawn
+    if($('#' + type + '-field').length == 0) {
+        field = document.createElement('table');
+        field.setAttribute('id', type + '-field');
+        field.setAttribute('cellpadding', '0');
+        // Create rows
+        for(i = 1; i <= letters.length; i++) {
+            var row = document.createElement('tr');
+            row.setAttribute('id', 'row-' + i);
 
-        for(var j = 1; j <= letters.length; j++) {
-            var cell = document.createElement('td');
-            cell.setAttribute('id', 'cell-' + i + letters[j - 1]);
-            cell.setAttribute('class', 'cell');
-            cell.innerHTML = '&nbsp;';
-            row.appendChild(cell);
+            // Create columns
+            for(var j = 1; j <= letters.length; j++) {
+                var cell = document.createElement('td');
+                cell.setAttribute('id', 'cell-' + i + letters[j - 1]);
+                cell.setAttribute('class', 'cell');
+                cell.innerHTML = '&nbsp;';
+                row.appendChild(cell);
+            }
+
+            field.appendChild(row);
         }
-
-        field.appendChild(row);
+        // Draw
+        document.body.appendChild(field);
     }
-
-    document.body.appendChild(field);
-
-    field = document.createElement('table');
-    field.setAttribute('id', 'enemy-field');
-    field.setAttribute('cellpadding', '0');
-    for(i = 1; i <= letters.length; i++) {
-        var row = document.createElement('tr');
-        row.setAttribute('id', 'row-' + i);
-
-        for(var j = 1; j <= letters.length; j++) {
-            var cell = document.createElement('td');
-            cell.setAttribute('id', 'cell-' + i + letters[j - 1]);
-            cell.setAttribute('class', 'cell');
-            cell.innerHTML = '&nbsp;';
-            row.appendChild(cell);
-        }
-
-        field.appendChild(row);
-    }
-
-    document.body.appendChild(field);
-
 };
 
 function shoot(x, y) {
