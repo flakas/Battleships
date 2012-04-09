@@ -1,7 +1,8 @@
 var letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
+var socket;
 
 $(function() {
-    var socket = io.connect("http://127.0.0.1:8080/");
+    socket = io.connect("http://127.0.0.1:8080/");
     socket.on('connect', function() {
         drawFields();
         socket.on('message', function(msg) {
@@ -9,8 +10,27 @@ $(function() {
         });
     });
 
-    $('#submit').click(function() {
-        socket.send($('#message').val());
+    // Enemy shoots at client
+    socket.on('shoot', function(obj) {
+        //TODO: needs to return proper information
+        $('#my-field #cell-' + obj.lattitude + obj.longitude).addClass('miss');
+        socket.emit('miss', obj);
+        console.log('Enemy shoots at ' + obj);
+    });
+
+    // My shot misses
+    socket.on('miss', function(obj) {
+        $('#enemy-field #cell-' + obj.lattitude + obj.longitude).addClass('miss');
+    });
+
+    // My shot hits
+    socket.on('hit', function(obj) {
+        $('#enemy-field #cell-' + obj.lattitude + obj.longitude).addClass('hit');
+    });
+
+    // My shot kills
+    socket.on('kill', function(obj) {
+        $('#enemy-field #cell-' + obj.lattitude + obj.longitude).addClass('kill');
     });
 });
 
@@ -56,3 +76,7 @@ function drawFields() {
     document.body.appendChild(field);
 
 };
+
+function shoot(x, y) {
+    socket.emit('shoot', { longitude : x, lattitude : y });
+}

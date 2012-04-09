@@ -1,3 +1,9 @@
+$my_ship_background: #66ff66;
+$my_ship_border: #006600;
+$hit: #ff6666;
+$miss: #aaa;
+$kill: #000;
+
 table {
     float: left;
     margin: 50px;
@@ -9,14 +15,21 @@ table {
     background: #fff;
     border: 2px solid #999;
 
-    .ship {
-        .hit {
-            background: #ff6666;
-        }
+}
 
-        .my {
-            background: #66ff66;
-            border: 4px solid #006600;
-        }
-    }
+.my {
+    background: $my_ship_background;
+    border: 2px solid $my_ship_border;
+}
+
+.hit {
+    background: $hit;
+}
+
+.miss {
+    background: $miss;
+}
+
+.kill {
+    background: $kill;
 }
