@@ -1,2 +1,2 @@
 #!/bin/bash
-node server/runserver.js
+node --debug server/runserver.js

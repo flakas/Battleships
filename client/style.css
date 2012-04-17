@@ -6,7 +6,9 @@ table {
   width: 20px;
   height: 20px;
   background: #fff;
-  border: 2px solid #999; }
+  border: 2px solid #999;
+  text-align: center;
+  line-height: 20px; }
 
 .my {
   background: #66ff66;
