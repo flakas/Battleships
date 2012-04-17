@@ -18,18 +18,16 @@ io.sockets.on('connection', function(socket) {
     socket.on('ready', function(obj) {
         ready_clients += 1;
         is_ready = true;
+        if(ready_clients == 2) {
+            io.sockets.emit('start', {});
+        }
     });
-
-    if(ready_clients == 2) {
-        socket.emit('start', {});
-    }
 
     socket.on('shoot', function(obj) {
         socket.broadcast.emit('shoot', obj);
     });
 
     socket.on('miss', function(obj) {
-        socket.send('Nothing');
         socket.broadcast.emit('miss', obj);
     });
 

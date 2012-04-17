@@ -1,6 +1,7 @@
 var letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
 var ships = [];
 var socket;
+var gameStarted = false;
 
 $(function() {
     socket = io.connect("http://192.168.1.102:8080/");
@@ -17,6 +18,7 @@ $(function() {
 
     socket.on('start', function(obj) {
         console.log('Let the battle begin!');
+        gameStarted = true;
         if(obj.my_turn == true) {
             console.log('My turn');
         }
@@ -93,6 +95,8 @@ function positionShips() {
     ships[1] = new Ship('c', 7, 1, 0);
     ships[2] = new Ship('g', 3, 1, 0);
     ships[3] = new Ship('f', 10, 1, 0);
+    socket.emit('ready', {});
+    console.log('I am ready!');
 };
 
 function Ship(x, y, size, orientation) {
@@ -114,5 +118,9 @@ function drawShips() {
 }
 
 function shoot(x, y) {
-    socket.emit('shoot', { longitude : x, lattitude : y });
+    if(gameStarted) {
+        socket.emit('shoot', { longitude : x, lattitude : y });
+    } else {
+        console.log('Cannot shoot before game start');
+    }
 }
