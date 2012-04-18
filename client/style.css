@@ -22,3 +22,7 @@ table {
 
 .kill {
   background: black; }
+
+.coordinate {
+  text-align: center;
+  text-transform: uppercase; }

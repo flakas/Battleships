@@ -2,9 +2,10 @@ var letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
 var ships = [];
 var socket;
 var gameStarted = false;
+var myTurn = false;
 
 $(function() {
-    socket = io.connect("http://192.168.1.102:8080/");
+    socket = io.connect("http://127.0.0.1:8080/");
     socket.on('connect', function() {
         drawField('my');
         drawField('enemy');
@@ -20,6 +21,7 @@ $(function() {
         console.log('Let the battle begin!');
         gameStarted = true;
         if(obj.my_turn == true) {
+            myTurn = true;
             console.log('My turn');
         }
     });
@@ -40,6 +42,7 @@ $(function() {
             socket.emit('miss', obj);
             console.log('He misses');
         }
+        myTurn = true;
     });
 
     // My shot misses
@@ -67,19 +70,29 @@ function drawField(type) {
         field.setAttribute('id', type + '-field');
         field.setAttribute('cellpadding', '0');
         // Create rows
-        for(i = 1; i <= letters.length; i++) {
+        for(i = 0; i <= letters.length; i++) {
             var row = document.createElement('tr');
             row.setAttribute('id', 'row-' + i);
 
             // Create columns
-            for(var j = 1; j <= letters.length; j++) {
+            for(var j = 0; j <= letters.length; j++) {
                 var cell = document.createElement('td');
-                cell.setAttribute('id', 'cell-' + i + letters[j - 1]);
-                cell.setAttribute('class', 'cell');
-                if(type == "enemy") {
-                    cell.setAttribute('onClick', 'javascript:shoot(\'' + letters[j - 1] + '\', ' + i + ')');
+                if(i == 0 || j == 0) {
+                    cell.setAttribute('class', 'coordinate');
+                    if(i == 0 && j > 0) {
+                        cell.innerHTML = letters[j - 1];
+                    }
+                    if(i > 0 && j == 0) {
+                        cell.innerHTML = i;
+                    }
+                } else {
+                    cell.setAttribute('id', 'cell-' + i + letters[j - 1]);
+                    cell.setAttribute('class', 'cell');
+                    if(type == "enemy") {
+                        cell.setAttribute('onClick', 'javascript:shoot(\'' + letters[j - 1] + '\', ' + i + ')');
+                    }
+                    cell.innerHTML = '&nbsp;';
                 }
-                cell.innerHTML = '&nbsp;';
                 row.appendChild(cell);
             }
 
@@ -93,8 +106,14 @@ function drawField(type) {
 function positionShips() {
     ships[0] = new Ship('a', 1, 1, 0);
     ships[1] = new Ship('c', 7, 1, 0);
-    ships[2] = new Ship('g', 3, 1, 0);
+    ships[2] = new Ship('g', 3, 1, 1);
     ships[3] = new Ship('f', 10, 1, 0);
+    ships[4] = new Ship('a', 3, 2, 1);
+    ships[5] = new Ship('a', 6, 2, 1);
+    ships[6] = new Ship('a', 9, 2, 1);
+    ships[7] = new Ship('c', 1, 3, 0);
+    ships[8] = new Ship('g', 1, 3, 0);
+    ships[9] = new Ship('j', 6, 4, 1);
     socket.emit('ready', {});
     console.log('I am ready!');
 };
@@ -104,6 +123,23 @@ function Ship(x, y, size, orientation) {
     this.size = size;
     this.orientation = orientation; //0 - horizontal, 1 - vertical
     this.status = 1;
+    if(orientation == 0) {
+        for(var i = 0; i < size; i++) {
+            $('#cell-' + (y + i) + x).data('ship', this);
+        }
+    } else {
+        for(var i = 0; i < size; i++) {
+            $('#cell-' + y + (letters[letters.indexOf(x) + i])).data('ship', this);
+        }
+    }
+}
+
+Ship.prototype.isHit = function() {
+    if(this.status == 0) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 function Coords(x, y) {
@@ -113,14 +149,27 @@ function Coords(x, y) {
 
 function drawShips() {
     for(var i = 0; i < ships.length; i++) {
-        $("#my-field #cell-" + ships[i].position.y + ships[i].position.x).addClass('my');
+        for(var j = 0; j < ships[i].size; j++) {
+            if(ships[i].orientation == 0) {
+                $("#my-field #cell-" + ships[i].position.y + (letters[letters.indexOf(ships[i].position.x) + j])).addClass('my');
+            } else {
+                $("#my-field #cell-" + (ships[i].position.y + j) + ships[i].position.x).addClass('my');
+            }
+        }
+        //$("#my-field #cell-" + ships[i].position.y + ships[i].position.x).addClass('my');
     }
 }
 
 function shoot(x, y) {
     if(gameStarted) {
-        socket.emit('shoot', { longitude : x, lattitude : y });
+        if (myTurn) {
+            socket.emit('shoot', { longitude : x, lattitude : y });
+            myTurn = false;
+        } else {
+            console.log('It is not my turn');
+        }
     } else {
         console.log('Cannot shoot before game start');
     }
 }
+

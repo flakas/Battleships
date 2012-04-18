@@ -6,11 +6,7 @@ var io = require('socket.io').listen(8080);
 io.sockets.on('connection', function(socket) {
     var is_ready = false;
     clients += 1;
-    //socket.on('message', function(msg) {
-        //console.log('Message from client: ' + msg); 
-        //socket.emit('message', { other : 'This is private' });
-        //socket.broadcast.emit('message', { data : msg });
-    //});
+
     if(clients == 2) {
         socket.emit('prepare', {});
     }
@@ -19,7 +15,9 @@ io.sockets.on('connection', function(socket) {
         ready_clients += 1;
         is_ready = true;
         if(ready_clients == 2) {
-            io.sockets.emit('start', {});
+            socket.emit('start', { my_turn : true });
+            socket.broadcast.emit('start', {});
+            //io.sockets.emit('start', {});
         }
     });
 
