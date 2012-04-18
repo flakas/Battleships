@@ -32,10 +32,19 @@ $(function() {
         console.log('Enemy shoots at ' + obj);
         cell = $('#my-field #cell-' + obj.lattitude + obj.longitude);
         if(cell.hasClass('my')) {
-            cell.addClass('hit');
-            cell.text('+');
-            socket.emit('hit', obj);
-            console.log('He hits!');
+            ship = cell.data('ship');
+            ship.liveCells--;
+            if(ship.liveCells > 0) { // Hit
+                cell.addClass('hit');
+                cell.text('+');
+                socket.emit('hit', obj);
+                console.log('He hits!');
+            } else { // Kill
+                cell.addClass('kill');
+                cell.text('X');
+                socket.emit('kill', obj);
+                console.log('He kills!');
+            }
         } else {
             cell.addClass('miss');
             cell.text('-');
@@ -123,13 +132,14 @@ function Ship(x, y, size, orientation) {
     this.size = size;
     this.orientation = orientation; //0 - horizontal, 1 - vertical
     this.status = 1;
+    this.liveCells = size;
     if(orientation == 0) {
         for(var i = 0; i < size; i++) {
-            $('#cell-' + (y + i) + x).data('ship', this);
+            $('#cell-' + y + (letters[letters.indexOf(x) + i])).data('ship', this);
         }
     } else {
         for(var i = 0; i < size; i++) {
-            $('#cell-' + y + (letters[letters.indexOf(x) + i])).data('ship', this);
+            $('#cell-' + (y + i) + x).data('ship', this);
         }
     }
 }
