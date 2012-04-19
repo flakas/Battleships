@@ -40,6 +40,7 @@ $(function() {
                 socket.emit('hit', obj);
                 console.log('He hits!');
             } else { // Kill
+                obj.killedCells = ship.markAsKilled();
                 cell.addClass('kill');
                 cell.text('X');
                 socket.emit('kill', obj);
@@ -64,11 +65,16 @@ $(function() {
     // My shot hits
     socket.on('hit', function(obj) {
         $('#enemy-field #cell-' + obj.lattitude + obj.longitude).addClass('hit');
+        $('#enemy-field #cell-' + obj.lattitude + obj.longitude).text('+');
     });
 
     // My shot kills
     socket.on('kill', function(obj) {
-        $('#enemy-field #cell-' + obj.lattitude + obj.longitude).addClass('kill');
+        //$('#enemy-field #cell-' + obj.lattitude + obj.longitude).addClass('kill');
+        for(var i = 0; i < obj.killedCells.length; i++) {
+            $('#enemy-field #cell-' + obj.killedCells[i].y + obj.killedCells[i].x).addClass('kill');
+            $('#enemy-field #cell-' + obj.killedCells[i].y + obj.killedCells[i].x).text('X');
+        }
     });
 });
 
@@ -150,6 +156,24 @@ Ship.prototype.isHit = function() {
     } else {
         return false;
     }
+}
+
+Ship.prototype.markAsKilled = function() {
+    var killedCells = [];
+    if(this.orientation == 0) {
+        for(var i = 0; i < this.size; i++) {
+            $('#cell-' + this.position.y + (letters[letters.indexOf(this.position.x) + i])).addClass('kill');
+            $('#cell-' + this.position.y + (letters[letters.indexOf(this.position.x) + i])).text('X');
+            killedCells.push(new Coords(letters[letters.indexOf(this.position.x) + i], this.position.y));
+        }
+    } else {
+        for(var i = 0; i < this.size; i++) {
+            $('#cell-' + (this.position.y + i) + this.position.x).addClass('kill');
+            $('#cell-' + (this.position.y + i) + this.position.x).text('X');
+            killedCells.push(new Coords(this.position.x, (this.position.y + i)));
+        }
+    }
+    return killedCells;
 }
 
 function Coords(x, y) {

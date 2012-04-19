@@ -21,7 +21,8 @@ table {
   background: #aaaaaa; }
 
 .kill {
-  background: black; }
+  background: black;
+  color: #fff; }
 
 .coordinate {
   text-align: center;
