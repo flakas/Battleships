@@ -57,23 +57,26 @@ $(function() {
 
     // My shot misses
     socket.on('miss', function(obj) {
-        $('#enemy-field #cell-' + obj.lattitude + obj.longitude).addClass('miss');
-        $('#enemy-field #cell-' + obj.lattitude + obj.longitude).text('-');
+        var cell = $('#enemy-field #cell-' + obj.lattitude + obj.longitude);
+        cell.addClass('miss');
+        cell.addClass('-');
         console.log(obj);
     });
 
     // My shot hits
     socket.on('hit', function(obj) {
-        $('#enemy-field #cell-' + obj.lattitude + obj.longitude).addClass('hit');
-        $('#enemy-field #cell-' + obj.lattitude + obj.longitude).text('+');
+        var cell = $('#enemy-field #cell-' + obj.lattitude + obj.longitude);
+        cell.addClass('hit');
+        cell.text('+');
     });
 
     // My shot kills
     socket.on('kill', function(obj) {
-        //$('#enemy-field #cell-' + obj.lattitude + obj.longitude).addClass('kill');
+        var cell;
         for(var i = 0; i < obj.killedCells.length; i++) {
-            $('#enemy-field #cell-' + obj.killedCells[i].y + obj.killedCells[i].x).addClass('kill');
-            $('#enemy-field #cell-' + obj.killedCells[i].y + obj.killedCells[i].x).text('X');
+            cell = $('#enemy-field #cell-' + obj.killedCells[i].y + obj.killedCells[i].x);
+            cell.addClass('kill');
+            cell.text('X');
         }
     });
 });
