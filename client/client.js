@@ -176,6 +176,26 @@ Ship.prototype.markAsKilled = function() {
     return killedCells;
 }
 
+Ship.prototype.isHorizontal = function() {
+    return this.orientation === 0;
+}
+
+Ship.prototype.isVertical = function() {
+    return this.orientation === 1;
+}
+
+Ship.prototype.drawShip = function() {
+    var ship;
+    for(var i = 0; i < this.size; i++) {
+        if(this.isHorizontal()) {
+            ship = $("#my-field #cell-" + this.position.y + (letters[letters.indexOf(this.position.x) + i]));
+        } else {
+            ship = $("#my-field #cell-" + (this.position.y + i) + this.position.x);
+        }
+        ship.addClass('my');
+    }
+}
+
 function Coords(x, y) {
     this.x = x;
     this.y = y;
@@ -183,14 +203,7 @@ function Coords(x, y) {
 
 function drawShips() {
     for(var i = 0; i < ships.length; i++) {
-        for(var j = 0; j < ships[i].size; j++) {
-            if(ships[i].orientation == 0) {
-                $("#my-field #cell-" + ships[i].position.y + (letters[letters.indexOf(ships[i].position.x) + j])).addClass('my');
-            } else {
-                $("#my-field #cell-" + (ships[i].position.y + j) + ships[i].position.x).addClass('my');
-            }
-        }
-        //$("#my-field #cell-" + ships[i].position.y + ships[i].position.x).addClass('my');
+        ships[i].drawShip();
     }
 }
 
