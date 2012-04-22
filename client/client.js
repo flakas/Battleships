@@ -160,18 +160,17 @@ Ship.prototype.isHit = function() {
 
 Ship.prototype.markAsKilled = function() {
     var killedCells = [];
-    if(this.orientation == 0) {
-        for(var i = 0; i < this.size; i++) {
-            $('#cell-' + this.position.y + (letters[letters.indexOf(this.position.x) + i])).addClass('kill');
-            $('#cell-' + this.position.y + (letters[letters.indexOf(this.position.x) + i])).text('X');
+    var ship;
+    for(var i = 0; i < this.size; i++) {
+        if(this.isHorizontal()) {
+            ship = $('#cell-' + this.position.y + (letters[letters.indexOf(this.position.x) + i]));
             killedCells.push(new Coords(letters[letters.indexOf(this.position.x) + i], this.position.y));
-        }
-    } else {
-        for(var i = 0; i < this.size; i++) {
-            $('#cell-' + (this.position.y + i) + this.position.x).addClass('kill');
-            $('#cell-' + (this.position.y + i) + this.position.x).text('X');
+        } else {
+            ship = $('#cell-' + (this.position.y + i) + this.position.x);
             killedCells.push(new Coords(this.position.x, (this.position.y + i)));
         }
+        ship.addClass('kill');
+        ship.text('X');
     }
     return killedCells;
 }
